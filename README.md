@@ -61,11 +61,15 @@ You will need to install the following locally:
 ## Monthly Cost Analysis
 Complete a month cost analysis of each Azure resource to give an estimate total cost using the table below:
 
-| Azure Resource | Service Tier | Monthly Cost |
+| Azure Resource | Service Tier |  Cost |
 | ------------ | ------------ | ------------ |
-| *Azure Postgres Database* |     |              |
-| *Azure Service Bus*   |         |              |
-| ...                   |         |              |
+| *Azure Postgres Database* |  Basic Compute Gen5 1 core   |        $0.034 per hour      |
+| *Azure Service Bus*       |    Basic     |      $0.05 per million operations        |
+| *SendGrid*                |      Free   |          $0    |
+| *Azure App Service*  | Free    |  $0   |
+| *Azure App Service Plan*  | Basic    |  < $0.01  |
+| *Azure Functions*         | Free/Pay as you go | 1 million executions free then $0.20 per million  
+
 
 ## Architecture Explanation
-This is a placeholder section where you can provide an explanation and reasoning for your architecture selection for both the Azure Web App and Azure Function.
+For this project, we chose to deploy the web app and its dependencies in Azure for the cost savings and latency improvements. There are many free or low cost options in Azure that allow us to deploy fast applications. Additionally, if we want more/less resources, it is extremeley easy to scale up/down. For applications that have high peaks but relatively low traffic on average, this is extremeley beneficial. We are also able to seperate components such that we only scale up/down on the necessary componenets rather than the system as a whole. 
