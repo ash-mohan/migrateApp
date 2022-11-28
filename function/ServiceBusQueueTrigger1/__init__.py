@@ -12,11 +12,14 @@ def main(msg: func.ServiceBusMessage):
     logging.info('Python ServiceBus queue trigger processed message: %s',notification_id)
 
     # TODO: Get connection to database
-    conn = psycopg2.connect(
-        host="techconfdbserver.postgres.database.azure.com",
-        database="techconfdb",
-        user="azureuser",
-        password="Udacityproject1")
+
+    # conn = psycopg2.connect(
+    #     host="techconfdbserver.postgres.database.azure.com",
+    #     database="techconfdb",
+    #     user="azureuser",
+    #     password="Udacityproject1")
+    conn = psycopg2.conn = psycopg2.connect(
+        dbname="techconfdb", user="azureuser@techconfdbserver", password="Udacityproject1", host="techconfdbserver.postgres.database.azure.com")
     cur = conn.cursor()
     try:
         # TODO: Get notification message and subject fron database using the notification_id
@@ -33,18 +36,21 @@ def main(msg: func.ServiceBusMessage):
         # TODO: Loop thru each attendee and send an email with a personalized subject
         for row in rows:
             subject = f"Hello {row[1]}: {notification[1]}"
-            sendgrid(row[0], subject, notification[0])
+            #sendgrid(row[0], subject, notification[0])
         logging.info("Emails sent to all attendees")
 
         # TODO: Update the notification table by setting the completed date and updating the status with the total number of attendees notified
-        status = f'{len(rows)} attendees'
-        query = """Update notification set status = %s, completed_date = %s where id = %s"""
-        cur.execute(query,(status, datetime.utcnow(), notification_id))
+        status = f'Notified {len(rows)} attendees'
+        sql = """ UPDATE notification
+                SET status = %s,
+                completed_date = %s
+                WHERE id = %s"""
+        cur.execute(sql,(status, datetime.utcnow(), notification_id))
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
         logging.error(error)
     finally:
-        logging.info('closing connection');
+        logging.info('closing connection')
         # TODO: Close connection
         cur.close()
         conn.close()
@@ -55,6 +61,6 @@ def sendgrid(email, subject, body):
         to_emails=email,
         subject=subject,
         plain_text_content=body)
-    SENDGRID_API_KEY = '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'
+    SENDGRID_API_KEY = ''
     sg = SendGridAPIClient(SENDGRID_API_KEY)    
     sg.send(message)
